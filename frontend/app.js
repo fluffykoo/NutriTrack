@@ -36,13 +36,52 @@ if (page === "dashboard") {
         <p style="color: red;">Erreur lors du chargement</p>
         `
     })
-} else {
+}else if (page === "repas") {
+	const contenu = document.getElementById("contenu");
+	const userId = localStorage.getItem("userId");
+	const date = new Date().toISOString().split("T")[0];
+
+	contenu.innerHTML = `
+	<h2 class="mb-4">Mes repas du ${date}</h2>
+	<p>Chargement...</p>
+	<div id="repas-list" class="row g-4"></div>
+	`;
+
+	fetch(`http://localhost:3000/meals/${userId}/${date}`)
+	.then(res => res.json())
+	.then(meals => {
+		if (!meals.length) {
+		document.getElementById("repas-list").innerHTML = "<p>Aucun repas ajouté aujourd'hui.</p>";
+		return;
+		}
+
+		const html = meals.map(meal => `
+		<div class="col-md-6">
+			<div class="card p-3">
+			<h5>${meal.nom}</h5>
+			<p>Calories : ${meal.calories} kcal</p>
+			<p>Protéines : ${meal.proteines} g</p>
+			<p>Glucides : ${meal.glucides} g</p>
+			<p>Lipides : ${meal.lipides} g</p>
+			<p class="text-muted small">Ajouté le ${meal.date}</p>
+			</div>
+		</div>
+		`).join("")
+
+		document.getElementById("repas-list").innerHTML = html
+	})
+	.catch(() => {
+		document.getElementById("repas-list").innerHTML = "<p style='color:red;'>Erreur lors du chargement</p>";
+	});
+}
+else {
     contenu.innerHTML = `
     <h2>${page.charAt(0).toUpperCase() + page.slice(1)}</h2>
     <p>Section en cours de création...</p>
     `;
 }
 }
+
 
 // 🔁 Fonction qui crée une carte pour une macro (calories, protéines...)
 function renderMacroCard(nom, valeur, objectif, couleur) {
