@@ -42,10 +42,36 @@ if (page === "dashboard") {
 	const date = new Date().toISOString().split("T")[0];
 
 	contenu.innerHTML = `
-	<h2 class="mb-4">Mes repas du ${date}</h2>
-	<p>Chargement...</p>
-	<div id="repas-list" class="row g-4"></div>
-	`;
+<h2 class="mb-4">Mes repas du ${date}</h2>
+<button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#modalRepas">
+    + Ajouter un repas
+</button>
+
+<div id="repas-list" class="row g-4"></div>
+
+<!-- Modal -->
+<div class="modal fade" id="modalRepas" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+    <div class="modal-content p-3">
+        <div class="modal-header">
+        <h5 class="modal-title">Ajouter un repas</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <div>
+
+        <div class="modal-body">
+        <form id="formRepas">
+            <input class="form-control mb-2" type="text" id="nom" placeholder="Nom du repas" required />
+            <input class="form-control mb-2" type="number" id="calories" placeholder="Calories" required />
+            <input class="form-control mb-2" type="number" id="proteines" placeholder="Protéines" />
+            <input class="form-control mb-2" type="number" id="glucides" placeholder="Glucides" />
+            <input class="form-control mb-2" type="number" id="lipides" placeholder="Lipides" />
+            <button type="submit" class="btn btn-success mt-2 w-100">Ajouter</button>
+        </form>
+        </div>
+    </div>
+    </div>
+</div>
+`
 
 	fetch(`http://localhost:3000/meals/${userId}/${date}`)
 	.then(res => res.json())
@@ -73,6 +99,41 @@ if (page === "dashboard") {
 	.catch(() => {
 		document.getElementById("repas-list").innerHTML = "<p style='color:red;'>Erreur lors du chargement</p>";
 	});
+    // Ajoute l'écouteur d'événement pour le formulaire dans la modale
+document.getElementById("formRepas").addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const userId = localStorage.getItem("userId");
+    const date = new Date().toISOString().split("T")[0];
+
+    const repas = {
+    userId,
+    nom: document.getElementById("nom").value,
+    calories: Number(document.getElementById("calories").value),
+    proteines: Number(document.getElementById("proteines").value),
+    glucides: Number(document.getElementById("glucides").value),
+    lipides: Number(document.getElementById("lipides").value),
+    date
+    };
+
+    fetch("http://localhost:3000/meals", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(repas)
+    })
+    .then((res) => res.json())
+    .then(() => {
+        // Ferme la modale après ajout
+        const modal = bootstrap.Modal.getInstance(document.getElementById("modalRepas"));
+        modal.hide();
+
+        // Recharge la page repas pour afficher le nouveau
+        naviguer("repas");
+    })
+    .catch(() => {
+        alert("Erreur lors de l'ajout du repas");
+    });
+});
 }
 else {
     contenu.innerHTML = `

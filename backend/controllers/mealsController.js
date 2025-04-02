@@ -18,5 +18,9 @@ try {
     res.status(500).json({ error: err.message })
 }
 }
-
-module.exports = { addMeal, getMealsByUser }
+const getMealsByUserAndDate = async (req, res) => {
+    const { userId, date } = req.params;
+    const meals = await Meal.find({ userId, date });
+    res.json(meals);
+};
+module.exports = { addMeal, getMealsByUser, getMealsByUserAndDate }
