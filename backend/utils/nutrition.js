@@ -1,12 +1,15 @@
-const getDailyTotals = (meals) => {
-    const base = { calories: 0, proteines: 0, glucides: 0, lipides: 0 }
+const R = require("ramda");
 
-    return meals.reduce((totals, meals) => ({
-    calories: totals.calories + (meals.calories || 0),
-    proteines: totals.proteines + (meals.proteines || 0),
-    glucides: totals.glucides + (meals.glucides || 0),
-    lipides: totals.lipides + (meals.lipides || 0)
-    }), base)
-}
+const getDailyTotals = (meals) =>
+R.reduce(
+    (acc, m) => ({
+    calories: acc.calories + m.calories,
+    proteines: acc.proteines + m.proteines,
+    glucides: acc.glucides + m.glucides,
+    lipides: acc.lipides + m.lipides
+    }),
+    { calories: 0, proteines: 0, glucides: 0, lipides: 0 },
+    meals
+);
 
-module.exports = { getDailyTotals }
+module.exports = { getDailyTotals };

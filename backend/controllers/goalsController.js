@@ -23,4 +23,18 @@ try {
 }
 }
 
-module.exports = { setGoal, getGoal }
+const updateGoal = async (req, res) => {
+try {
+    const updated = await Goal.findOneAndUpdate(
+    { userId: req.params.userId },
+    req.body,
+    { new: true }
+    );
+    res.json(updated);
+} catch (err) {
+    res.status(400).json({ error: err.message });
+}
+};
+
+
+module.exports = { setGoal, getGoal, updateGoal }
