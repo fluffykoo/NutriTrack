@@ -15,6 +15,7 @@ app.use('/meals', require('./routes/meals'))
 app.use('/goals', require('./routes/goals'))
 app.use('/users', require('./routes/users'))
 
+
 app.get('/', (req, res) => {
 res.send('Serveur NutriTrack actif !')
 })
